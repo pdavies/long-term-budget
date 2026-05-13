@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Long-Term Budget</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <aside class="results-column">
+          <div class="intro">
+            <div>
+              <p class="eyebrow">Finance model</p>
+              <h1 id="app-title">Long-Term Budget</h1>
+            </div>
+            <div class="summary-strip" aria-label="Projection summary">
+              <div>
+                <span>Worth at 100</span>
+                <strong id="worthAt100">£0</strong>
+              </div>
+              <div>
+                <span>Lowest point</span>
+                <strong id="lowestWorth">£0</strong>
+              </div>
+              <div>
+                <span>Runway</span>
+                <strong id="runway">Age 100+</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="graph-panel">
+            <div class="chart-toolbar">
+              <div>
+                <h2>Expected net worth</h2>
+                <p id="chartCaption">Projection from your current age to 100.</p>
+              </div>
+              <button class="ghost-button" id="resetButton" type="button">Reset</button>
+            </div>
+            <div class="chart-wrap">
+              <svg id="netWorthChart" role="img" aria-labelledby="chartTitle chartDesc"></svg>
+              <div class="chart-tooltip" id="chartTooltip" hidden></div>
+            </div>
+          </div>
+        </aside>
+
+        <form class="controls" id="financeForm">
+          <section class="control-group" aria-labelledby="basics-title">
+            <div class="group-heading">
+              <h2 id="basics-title">Starting point</h2>
+            </div>
+            <div class="field-grid">
+              <label class="range-field">
+                <span>Current age <output id="currentAgeOut">40</output></span>
+                <input id="currentAge" type="range" min="18" max="90" step="1">
+              </label>
+              <label class="range-field">
+                <span>Savings and investments <output id="currentWorthOut">£250,000</output></span>
+                <input id="currentWorth" type="range" min="0" max="2000000" step="5000">
+              </label>
+              <label class="range-field">
+                <span>Annual growth <output id="growthRateOut">5.0%</output></span>
+                <input id="growthRate" type="range" min="-5" max="12" step="0.1">
+              </label>
+              <label class="range-field">
+                <span>Monthly outgoings <output id="monthlyOutgoingsOut">£2,500</output></span>
+                <input id="monthlyOutgoings" type="range" min="0" max="12000" step="50">
+              </label>
+              <label class="range-field">
+                <span>Monthly income <output id="monthlyIncomeOut">£4,500</output></span>
+                <input id="monthlyIncome" type="range" min="0" max="20000" step="50">
+              </label>
+              <label class="range-field">
+                <span>Income stops at age <output id="incomeStopsAgeOut">68</output></span>
+                <input id="incomeStopsAge" type="range" min="18" max="100" step="1">
+              </label>
+            </div>
+          </section>
+
+          <section class="control-group" aria-labelledby="mortgage-title">
+            <div class="group-heading">
+              <h2 id="mortgage-title">Mortgage</h2>
+              <label class="switch">
+                <input id="mortgageEnabled" type="checkbox">
+                <span>Enabled</span>
+              </label>
+            </div>
+            <div class="field-grid">
+              <label class="range-field">
+                <span>Property price <output id="propertyPriceOut">£450,000</output></span>
+                <input id="propertyPrice" type="range" min="50000" max="2000000" step="5000">
+              </label>
+              <label class="range-field">
+                <span>Deposit <output id="depositOut">£90,000</output></span>
+                <input id="deposit" type="range" min="0" max="1000000" step="5000">
+              </label>
+              <label class="range-field">
+                <span>Interest <output id="mortgageRateOut">4.5%</output></span>
+                <input id="mortgageRate" type="range" min="0" max="12" step="0.1">
+              </label>
+              <label class="range-field">
+                <span>Term <output id="mortgageYearsOut">25 years</output></span>
+                <input id="mortgageYears" type="range" min="1" max="40" step="1">
+              </label>
+            </div>
+            <p class="calculated-line">
+              Monthly mortgage payment: <strong id="mortgagePayment">£0</strong>
+              <span id="mortgageNote"></span>
+            </p>
+          </section>
+
+          <section class="control-group" aria-labelledby="oneoff-title">
+            <div class="group-heading">
+              <h2 id="oneoff-title">One-off income</h2>
+              <button class="compact-button" id="addOneOff" type="button">Add</button>
+            </div>
+            <div class="item-list" id="oneOffList"></div>
+          </section>
+
+          <section class="control-group" aria-labelledby="recurring-title">
+            <div class="group-heading">
+              <h2 id="recurring-title">Recurring income</h2>
+              <button class="compact-button" id="addRecurring" type="button">Add</button>
+            </div>
+            <div class="item-list" id="recurringList"></div>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
