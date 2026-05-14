@@ -328,8 +328,12 @@ input[type="text"] {
   stroke-linejoin: round;
 }
 
-.worth-area {
-  fill: rgba(11, 122, 117, 0.13);
+.liquid-area {
+  fill: rgba(11, 122, 117, 0.2);
+}
+
+.property-area {
+  fill: rgba(93, 111, 202, 0.28);
 }
 
 .chart-dot {
@@ -380,6 +384,24 @@ input[type="text"] {
   fill: #5d6fca;
 }
 
+.milestone-property .milestone-dot {
+  fill: #5d6fca;
+}
+
+.chart-legend text {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.legend-liquid {
+  fill: rgba(11, 122, 117, 0.35);
+}
+
+.legend-property {
+  fill: rgba(93, 111, 202, 0.45);
+}
+
 .chart-tooltip {
   position: absolute;
   min-width: 134px;
@@ -396,6 +418,12 @@ input[type="text"] {
 .chart-tooltip strong {
   display: block;
   margin-top: 2px;
+}
+
+.chart-tooltip span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 @media (max-width: 760px) {

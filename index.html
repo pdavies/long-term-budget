@@ -53,62 +53,38 @@
             </div>
             <div class="field-grid">
               <label class="range-field">
-                <span>Current age <output id="currentAgeOut">40</output></span>
+                <span>Current age <output id="currentAgeOut"></output></span>
                 <input id="currentAge" type="range" min="18" max="90" step="1">
               </label>
               <label class="range-field">
-                <span>Savings and investments <output id="currentWorthOut">£250,000</output></span>
+                <span>Savings and investments <output id="currentWorthOut"></output></span>
                 <input id="currentWorth" type="range" min="0" max="2000000" step="5000">
               </label>
               <label class="range-field">
-                <span>Annual growth <output id="growthRateOut">5.0%</output></span>
+                <span>Annual growth <output id="growthRateOut"></output></span>
                 <input id="growthRate" type="range" min="-5" max="12" step="0.1">
               </label>
               <label class="range-field">
-                <span>Monthly outgoings <output id="monthlyOutgoingsOut">£2,500</output></span>
+                <span>Monthly outgoings (exc mortgage) <output id="monthlyOutgoingsOut"></output></span>
                 <input id="monthlyOutgoings" type="range" min="0" max="12000" step="50">
               </label>
               <label class="range-field">
-                <span>Monthly income <output id="monthlyIncomeOut">£4,500</output></span>
+                <span>Monthly income <output id="monthlyIncomeOut"></output></span>
                 <input id="monthlyIncome" type="range" min="0" max="20000" step="50">
               </label>
               <label class="range-field">
-                <span>Income stops at age <output id="incomeStopsAgeOut">68</output></span>
+                <span>Income stops at age <output id="incomeStopsAgeOut"></output></span>
                 <input id="incomeStopsAge" type="range" min="18" max="100" step="1">
               </label>
             </div>
           </section>
 
-          <section class="control-group" aria-labelledby="mortgage-title">
+          <section class="control-group" aria-labelledby="property-title">
             <div class="group-heading">
-              <h2 id="mortgage-title">Mortgage</h2>
-              <label class="switch">
-                <input id="mortgageEnabled" type="checkbox">
-                <span>Enabled</span>
-              </label>
+              <h2 id="property-title">Properties and mortgages</h2>
+              <button class="compact-button" id="addProperty" type="button">Add</button>
             </div>
-            <div class="field-grid">
-              <label class="range-field">
-                <span>Property price <output id="propertyPriceOut">£450,000</output></span>
-                <input id="propertyPrice" type="range" min="50000" max="2000000" step="5000">
-              </label>
-              <label class="range-field">
-                <span>Deposit <output id="depositOut">£90,000</output></span>
-                <input id="deposit" type="range" min="0" max="1000000" step="5000">
-              </label>
-              <label class="range-field">
-                <span>Interest <output id="mortgageRateOut">4.5%</output></span>
-                <input id="mortgageRate" type="range" min="0" max="12" step="0.1">
-              </label>
-              <label class="range-field">
-                <span>Term <output id="mortgageYearsOut">25 years</output></span>
-                <input id="mortgageYears" type="range" min="1" max="40" step="1">
-              </label>
-            </div>
-            <p class="calculated-line">
-              Monthly mortgage payment: <strong id="mortgagePayment">£0</strong>
-              <span id="mortgageNote"></span>
-            </p>
+            <div class="item-list" id="propertyList"></div>
           </section>
 
           <section class="control-group" aria-labelledby="oneoff-title">
