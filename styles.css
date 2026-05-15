@@ -159,6 +159,18 @@ h2 {
   margin-bottom: 0;
 }
 
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ghost-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  background: rgba(11, 122, 117, 0.08);
+}
+
 .field-grid {
   display: grid;
   gap: 15px;
@@ -495,6 +507,16 @@ input[type="text"] {
 
   .remove-button {
     width: 100%;
+  }
+
+  .chart-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .chart-wrap {

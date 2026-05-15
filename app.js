@@ -50,6 +50,9 @@ const numericControls = [
   "incomeStopsAge"
 ];
 const chartMargin = { top: 34, right: 28, bottom: 44, left: 74 };
+const compactLayoutQuery = window.matchMedia("(max-width: 760px)");
+let showMilestoneLabels = !compactLayoutQuery.matches;
+let labelPreferenceTouched = false;
 
 function init() {
   numericControls.forEach((id) => {
@@ -102,6 +105,13 @@ function init() {
     render();
   });
 
+  document.querySelector("#toggleLabelsButton").addEventListener("click", () => {
+    labelPreferenceTouched = true;
+    showMilestoneLabels = !showMilestoneLabels;
+    updateLabelToggle();
+    if (lastProjection) renderChart(lastProjection);
+  });
+
   chart.addEventListener("pointermove", handleChartPointer);
   chart.addEventListener("pointerleave", () => {
     tooltip.hidden = true;
@@ -110,13 +120,26 @@ function init() {
   window.addEventListener("resize", () => {
     if (lastProjection) renderChart(lastProjection);
   });
+  compactLayoutQuery.addEventListener("change", (event) => {
+    if (labelPreferenceTouched) return;
+    showMilestoneLabels = !event.matches;
+    updateLabelToggle();
+    if (lastProjection) renderChart(lastProjection);
+  });
   window.addEventListener("scroll", () => {
     if (tooltip.hidden) return;
     tooltip.hidden = true;
     if (lastProjection) renderChart(lastProjection);
   }, { passive: true });
 
+  updateLabelToggle();
   render();
+}
+
+function updateLabelToggle() {
+  const button = document.querySelector("#toggleLabelsButton");
+  button.setAttribute("aria-pressed", String(showMilestoneLabels));
+  button.textContent = showMilestoneLabels ? "Labels on" : "Labels off";
 }
 
 function syncFormFromState() {
@@ -349,13 +372,15 @@ function renderChart(projection, highlightIndex = null) {
     <path class="worth-line" d="${totalPath}"></path>
     ${milestones.map((milestone) => `
       <g class="milestone milestone-${milestone.type}">
-        <line class="milestone-guide" x1="${milestone.x.toFixed(2)}" x2="${milestone.x.toFixed(2)}" y1="${(milestone.labelY + 21).toFixed(2)}" y2="${milestone.y.toFixed(2)}"></line>
         <circle class="milestone-dot" cx="${milestone.x.toFixed(2)}" cy="${milestone.y.toFixed(2)}" r="4.8"></circle>
-        <rect class="milestone-label-bg" x="${(milestone.labelX - 68).toFixed(2)}" y="${(milestone.labelY - 13).toFixed(2)}" width="136" height="37" rx="6"></rect>
-        <text class="milestone-label" x="${milestone.labelX.toFixed(2)}" y="${milestone.labelY.toFixed(2)}">
-          <tspan x="${milestone.labelX.toFixed(2)}" dy="0">${escapeHtml(truncateLabel(milestone.label, 21))}</tspan>
-          <tspan class="milestone-detail" x="${milestone.labelX.toFixed(2)}" dy="15">${escapeHtml(milestone.detail)}</tspan>
-        </text>
+        ${showMilestoneLabels ? `
+          <line class="milestone-guide" x1="${milestone.x.toFixed(2)}" x2="${milestone.x.toFixed(2)}" y1="${(milestone.labelY + 21).toFixed(2)}" y2="${milestone.y.toFixed(2)}"></line>
+          <rect class="milestone-label-bg" x="${(milestone.labelX - 68).toFixed(2)}" y="${(milestone.labelY - 13).toFixed(2)}" width="136" height="37" rx="6"></rect>
+          <text class="milestone-label" x="${milestone.labelX.toFixed(2)}" y="${milestone.labelY.toFixed(2)}">
+            <tspan x="${milestone.labelX.toFixed(2)}" dy="0">${escapeHtml(truncateLabel(milestone.label, 21))}</tspan>
+            <tspan class="milestone-detail" x="${milestone.labelX.toFixed(2)}" dy="15">${escapeHtml(milestone.detail)}</tspan>
+          </text>
+        ` : ""}
       </g>
     `).join("")}
     ${highlightIndex !== null ? `<circle class="chart-dot" cx="${x(points[highlightIndex].age)}" cy="${y(points[highlightIndex].worth)}" r="6"></circle>` : ""}
