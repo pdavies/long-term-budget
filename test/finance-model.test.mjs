@@ -14,6 +14,8 @@ function baseState(overrides = {}) {
   return {
     currentAge: 40,
     currentWorth: 0,
+    pensionValue: 0,
+    monthlyPensionContribution: 0,
     growthRate: 0,
     monthlyOutgoings: 0,
     monthlyIncome: 0,
@@ -115,6 +117,66 @@ test("tracks mortgage payments as a transfer from liquid wealth to property equi
   closeTo(end.liquid, 22000);
   closeTo(end.propertyEquity, 28000);
   closeTo(end.worth, 50000);
+});
+
+test("pension contributions accumulate without affecting liquid", () => {
+  const projection = projectFinances(baseState({
+    currentWorth: 10000,
+    monthlyPensionContribution: 100
+  }), { endAge: 41 });
+
+  const end = finalPoint(projection);
+  closeTo(end.liquid, 10000);
+  closeTo(end.pension, 1200);
+  closeTo(end.worth, 11200);
+});
+
+test("pension grows with the same growth rate as liquid", () => {
+  const projection = projectFinances(baseState({
+    pensionValue: 12000,
+    growthRate: 12
+  }), { endAge: 41 });
+
+  const end = finalPoint(projection);
+  closeTo(end.pension, 13440, 1);
+});
+
+test("pension contributions stop when income stops", () => {
+  const projection = projectFinances(baseState({
+    monthlyPensionContribution: 100,
+    incomeStopsAge: 40.5
+  }), { endAge: 41 });
+
+  const end = finalPoint(projection);
+  closeTo(end.pension, 500);
+});
+
+test("deficit spills from liquid into pension once liquid is exhausted", () => {
+  const projection = projectFinances(baseState({
+    currentWorth: 1200,
+    pensionValue: 5000,
+    monthlyOutgoings: 200
+  }), { endAge: 41 });
+
+  const end = finalPoint(projection);
+  closeTo(end.liquid, 0);
+  closeTo(end.pension, 3800);
+  closeTo(end.worth, 3800);
+
+  const allLiquidNonNegative = projection.points.every((point) => point.liquid >= -0.01);
+  assert.ok(allLiquidNonNegative, "liquid should never go negative while pension is positive");
+});
+
+test("starting pension value is included in net worth", () => {
+  const projection = projectFinances(baseState({
+    currentWorth: 5000,
+    pensionValue: 3000
+  }), { endAge: 41 });
+
+  const start = projection.points[0];
+  closeTo(start.liquid, 5000);
+  closeTo(start.pension, 3000);
+  closeTo(start.worth, 8000);
 });
 
 test("grows property value", () => {

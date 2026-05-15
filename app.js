@@ -3,6 +3,8 @@ const { calculateMortgagePayment, projectFinances: projectFinanceModel } = windo
 const defaults = {
   currentAge: 40,
   currentWorth: 50000,
+  pensionValue: 0,
+  monthlyPensionContribution: 0,
   growthRate: 3,
   monthlyOutgoings: 2000,
   monthlyIncome: 3000,
@@ -44,6 +46,8 @@ const percent = new Intl.NumberFormat("en-GB", {
 const numericControls = [
   "currentAge",
   "currentWorth",
+  "pensionValue",
+  "monthlyPensionContribution",
   "growthRate",
   "monthlyOutgoings",
   "monthlyIncome",
@@ -169,6 +173,8 @@ function render() {
 function updateOutputs() {
   outputs.currentAge.value = state.currentAge;
   outputs.currentWorth.value = currency.format(state.currentWorth);
+  outputs.pensionValue.value = currency.format(state.pensionValue);
+  outputs.monthlyPensionContribution.value = currency.format(state.monthlyPensionContribution);
   outputs.growthRate.value = `${percent.format(state.growthRate)}%`;
   outputs.monthlyOutgoings.value = currency.format(state.monthlyOutgoings);
   outputs.monthlyIncome.value = currency.format(state.monthlyIncome);
@@ -330,7 +336,7 @@ function renderChart(projection, highlightIndex = null) {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const points = projection.points;
-  const values = points.flatMap((point) => [0, point.liquid, point.worth]);
+  const values = points.flatMap((point) => [0, point.liquid, point.liquid + point.pension, point.worth]);
   const minWorth = Math.min(...values);
   const maxWorth = Math.max(1000, ...values);
   const pad = Math.max(10000, (maxWorth - minWorth) * 0.08);
@@ -343,7 +349,8 @@ function renderChart(projection, highlightIndex = null) {
   const y = (worth) => margin.top + (1 - ((worth - yMin) / (yMax - yMin || 1))) * innerHeight;
   const totalPath = linePath(points, x, y, "worth");
   const liquidAreaPath = areaBetweenPath(points, x, y, () => 0, (point) => point.liquid);
-  const propertyAreaPath = areaBetweenPath(points, x, y, (point) => point.liquid, (point) => point.worth);
+  const pensionAreaPath = areaBetweenPath(points, x, y, (point) => point.liquid, (point) => point.liquid + point.pension);
+  const propertyAreaPath = areaBetweenPath(points, x, y, (point) => point.liquid + point.pension, (point) => point.worth);
 
   const yTicks = buildTicks(yMin, yMax, 5);
   const xTicks = buildAgeTicks(xMin, xMax);
@@ -354,9 +361,11 @@ function renderChart(projection, highlightIndex = null) {
     <desc id="chartDesc">Stacked chart showing liquid wealth plus property equity from current age to age 100.</desc>
     <g class="chart-legend">
       <rect class="legend-liquid" x="${margin.left}" y="12" width="10" height="10" rx="2"></rect>
-      <text x="${margin.left + 15}" y="21">Savings and investments</text>
-      <rect class="legend-property" x="${margin.left + 158}" y="12" width="10" height="10" rx="2"></rect>
-      <text x="${margin.left + 173}" y="21">Property equity</text>
+      <text x="${margin.left + 15}" y="21">Savings & investments</text>
+      <rect class="legend-pension" x="${margin.left + 150}" y="12" width="10" height="10" rx="2"></rect>
+      <text x="${margin.left + 165}" y="21">Pension</text>
+      <rect class="legend-property" x="${margin.left + 222}" y="12" width="10" height="10" rx="2"></rect>
+      <text x="${margin.left + 237}" y="21">Property equity</text>
     </g>
     ${yTicks.map((tick) => `
       <line class="grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${y(tick)}" y2="${y(tick)}"></line>
@@ -368,6 +377,7 @@ function renderChart(projection, highlightIndex = null) {
     `).join("")}
     <line class="zero-line" x1="${margin.left}" x2="${width - margin.right}" y1="${y(0)}" y2="${y(0)}"></line>
     <path class="liquid-area" d="${liquidAreaPath}"></path>
+    <path class="pension-area" d="${pensionAreaPath}"></path>
     <path class="property-area" d="${propertyAreaPath}"></path>
     <path class="worth-line" d="${totalPath}"></path>
     ${milestones.map((milestone) => `
@@ -442,6 +452,7 @@ function handleChartPointer(event) {
     Age ${formatAge(point.age)}
     <strong>${currency.format(point.worth)}</strong>
     <span>Liquid ${currency.format(point.liquid)}</span>
+    <span>Pension ${currency.format(point.pension)}</span>
     <span>Property ${currency.format(point.propertyEquity)}</span>
   `;
 }

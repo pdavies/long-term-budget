@@ -34,6 +34,7 @@
     const formatAge = options.formatAge ?? ((age) => Number.isInteger(age) ? String(age) : age.toFixed(1));
     const monthlyGrowth = (1 + state.growthRate / 100) ** (1 / 12) - 1;
     let liquid = state.currentWorth;
+    let pension = state.pensionValue;
     const months = Math.max(0, Math.round((endAge - state.currentAge) * 12));
     const oneOffsByMonth = new Map();
     const propertyPlans = state.properties
@@ -68,6 +69,14 @@
         const monthlyNet = earnedIncome + recurringIncome - state.monthlyOutgoings - mortgageOut;
 
         liquid = liquid * (1 + monthlyGrowth) + monthlyNet + (oneOffsByMonth.get(month) || 0);
+        const pensionContribution = age < state.incomeStopsAge ? state.monthlyPensionContribution : 0;
+        pension = pension * (1 + monthlyGrowth) + pensionContribution;
+
+        if (liquid < 0 && pension > 0) {
+          const spill = Math.min(pension, -liquid);
+          liquid += spill;
+          pension -= spill;
+        }
       }
 
       propertyPlans.forEach((property) => {
@@ -81,10 +90,10 @@
         if (elapsed < 0) return sum;
         return sum + propertyValueAt(property, elapsed) - mortgageBalanceAt(property, elapsed);
       }, 0);
-      const worth = liquid + propertyEquity;
+      const worth = liquid + pension + propertyEquity;
 
       if (month % 3 === 0 || month === months) {
-        points.push({ age, liquid, propertyEquity, worth });
+        points.push({ age, liquid, pension, propertyEquity, worth });
       }
     }
 

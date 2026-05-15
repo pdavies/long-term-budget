@@ -344,6 +344,10 @@ input[type="text"] {
   fill: rgba(11, 122, 117, 0.2);
 }
 
+.pension-area {
+  fill: rgba(197, 138, 24, 0.25);
+}
+
 .property-area {
   fill: rgba(93, 111, 202, 0.28);
 }
@@ -408,6 +412,10 @@ input[type="text"] {
 
 .legend-liquid {
   fill: rgba(11, 122, 117, 0.35);
+}
+
+.legend-pension {
+  fill: rgba(197, 138, 24, 0.40);
 }
 
 .legend-property {
